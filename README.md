@@ -53,7 +53,7 @@ show(p)
 ## Authors
 
 * **Guillermo Barrios** - *Initial work* - [GEE-UNAM](https://github.com/Altamar)
-* **Maximiliano Valdez** - *Espiritual leadership* - [IER-UNAM](https://github.com/garaged)
+* **Maximiliano Valdez** - *Spiritual leadership* - [IER-UNAM](https://github.com/garaged)
 
 ## License
 

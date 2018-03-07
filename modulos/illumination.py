@@ -105,7 +105,7 @@ class daylight:
         UDI_sub = (UDI_sub /((t_max-t_min)*self.dias)*100).reshape(self.ny,self.nx)
         UDI_u   = (UDI_u   /((t_max-t_min)*self.dias)*100).reshape(self.ny,self.nx)
         UDI_sob = (UDI_sob /((t_max-t_min)*self.dias)*100).reshape(self.ny,self.nx)
-        print(UDI_sub.shape)
+
     #GRAFICADO DE LOS UDISself.
         fig = plt.figure(figsize=(10,8))
         levels = np.linspace(0,100,dC)
@@ -145,7 +145,7 @@ class daylight:
   
     def MAP(self,dia,hora,Lmax):
         position = (dia-1)*24-(24-hora-1)
-        mapa = self.ill_data.iloc[position].values.reshape(self.nx,self.ny)
+        mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
         fig = plt.figure(figsize=(10,8))
         levels = np.linspace(0,Lmax,50)
         x = np.linspace(self.xmin,self.xmax,self.nx)
@@ -163,7 +163,7 @@ class daylight:
         
     def X(self,dia,hora,jj):
         position = (dia-1)*24-(24-hora-1)
-        mapa = self.ill_data.iloc[position].values.reshape(self.nx,self.ny)
+        mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
 #         print(jj*self.deltay+self.deltay/2.)
         x = np.linspace(self.xmin,self.xmax,self.nx)
         ymax = self.ymax - self.ymin + jj*self.deltay + self.deltay/2.
@@ -182,16 +182,17 @@ class daylight:
         print('#[m]\t[lx]')
         for i in range(len(x)):
             print("{:.2f}\t{:.2f}".format(x[i],mapa[jj,i])) 
-        
+      
+   
         
     def y(self):
-        interact(self.Y,
-                 dia=(1,365,1),
-                 hora=(0,23,1),
-                 ii=(0,self.nx-1,1))
+        interact_manual(self.Y,
+                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hora=widgets.IntSlider(min=0,max=23,step=1,value=12),
+                 ii=widgets.IntSlider(min=0,max=self.nx-1,step=1,value=0))
     def Y(self,dia,hora,ii):
         position = (dia-1)*24-(24-hora-1)
-        mapa = self.ill_data.iloc[position].values.reshape(self.nx,self.ny)
+        mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
 #         print(ii*self.deltax + self.deltax/2.)
         y = np.linspace(self.ymin,self.ymax,self.ny)
         x = np.linspace(self.xmin,self.xmax,self.nx)
@@ -211,14 +212,14 @@ class daylight:
         
         
     def x(self):
-        interact(self.X,
-                 dia=(1,365,1),
-                 hora=(0,23,1),
-                 jj=(0,self.ny-1,1))
+        interact_manual(self.X,
+                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hora=widgets.IntSlider(min=0,max=23,step=1,value=12),
+                 jj=widgets.IntSlider(min=0,max=self.ny-1,step=1,value=0))
         
     def map(self):
-        interact(self.MAP,
-                 dia=(1,365,1),
-                 hora=(6,20,1),
-                 Lmax=(0,35000,100))
+        interact_manual(self.MAP,
+                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hora=widgets.IntSlider(min=6,max=20,step=1,value=12),
+                 Lmax=widgets.IntSlider(min=0,max=35000,step=100,value=5000))
         
