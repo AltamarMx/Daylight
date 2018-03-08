@@ -11,12 +11,12 @@ class daylight:
     Class to read ILL files from a Radiance Simulation, calculate and render UDIs, illuminance maps and others.
 
     Use:
-    ill(arg1)
+    a = ill.daylight(arg1)
 
     Parameters
     ----------
     arg1 : path of the ILL file to load into a DataFrame.
-        arg1 = 'data/CEEA.ill'
+    arg1 = 'data/CEEA.ill'
     Returns
     nx: number of elements in the x direction of the grid
     ny: number of elements in the y direction of the grid
@@ -26,14 +26,16 @@ class daylight:
     dy: Size of the grid in the y direction
     -------
     The class contains the following methods:
+    
     udi()
         Calculate the UDI [https://patternguide.advancedbuildings.net/using-this-guide/analysis-methods/useful-daylight-illuminance]
-        when defining the following parameters:
+        defining the following parameters:
         E_LL:  Lower limit illumination level [lx]
         E_UL:  Upper limit illumination level [lx]
         t_min: Start hour of day to evaluate the UDI [h]
-        t_max: End hout of day to evaluate the UDI [h]
+        t_http://localhost:8891/edit/modulos/illumination.py#max: End hout of day to evaluate the UDI [h]
         dC:    Number of color leves for the UDI [-]
+        Once executed, prints the frequency of visual comfort (FVC).
         
     map()
         Plot the illuminance map for the space for a specific day, time and renders using a maximum value of the illuminance:
@@ -107,32 +109,37 @@ class daylight:
         UDI_sob = (UDI_sob /((t_max-t_min)*self.dias)*100).reshape(self.ny,self.nx)
 
     #GRAFICADO DE LOS UDISself.
-        fig = plt.figure(figsize=(10,8))
+        fig = plt.figure(figsize=(12,8))
         levels = np.linspace(0,100,dC)
+        
+        ax1 = fig.add_subplot(231,aspect=self.nx/self.ny)   
+        
         x = np.linspace(self.xmin,self.xmax,self.nx)
         y = np.linspace(self.ymin,self.ymax,self.ny)
-        ax1 = fig.add_subplot(231)    
         plt.xlabel('$x$ $[m]$')
         plt.ylabel('$y$ $[m]$')
-        plt.title('$UDI_{sub}$')
         plt.set_cmap('gist_heat')
         plt.set_cmap('gnuplot')
-        
+        #ax1 = set_aspect(1)
+         
+        plt.title('$UDI_{und}$')
         z_contourR = ax1.contourf(x,y,UDI_sub,levels=levels)
         cbarR = plt.colorbar(z_contourR,ticks=np.linspace(0,100,6))
-        ax2 = fig.add_subplot(232)
+        
+        ax2 = fig.add_subplot(232,aspect=self.nx/self.ny)
         plt.title('$UDI_u$')
         z_contourI = ax2.contourf(x,y,UDI_u,levels=levels)
         cbarI = plt.colorbar(z_contourI,ticks=np.linspace(0,100,6))
-        ax3 = fig.add_subplot(233)
-        plt.title('$UDI_{sob}$')
+        
+        ax3 = fig.add_subplot(233,aspect=self.nx/self.ny)
+        plt.title('$UDI_{over}$')
         z_contourJ = ax3.contourf(x,y,UDI_sob,levels=levels)
         cbarI = plt.colorbar(z_contourJ,ticks=np.linspace(0,100,6))
-        plt.tight_layout()
-        plt.show()
-        print("FCV = {:.2}%".format(np.average(UDI_u)) )
         
-
+        plt.tight_layout()
+        
+        plt.show()
+        print("FVC = {:.2f}%".format(np.average(UDI_u)) )
         
     def udi(self):
         interact_manual(self.UDI,
@@ -150,19 +157,28 @@ class daylight:
         levels = np.linspace(0,Lmax,50)
         x = np.linspace(self.xmin,self.xmax,self.nx)
         y = np.linspace(self.ymin,self.ymax,self.ny)
-        ax1 = fig.add_subplot(111)    
+        ax1 = fig.add_subplot(111,aspect=self.nx/self.ny)    
         plt.xlabel('$x$ $[m]$')
         plt.ylabel('$y$ $[m]$')
         plt.title('Illuminance $[lx]$')
-        plt.set_cmap('gist_heat')
+        #plt.set_cmap('gist_heat')
         plt.set_cmap('gnuplot')
+        #plt.axes().set_aspect(1.0)
         
         z_contourR = ax1.contourf(x,y,mapa,levels=levels)
         cbarR = plt.colorbar(z_contourR,ticks=np.linspace(0,Lmax,6))
         plt.show()
         
-    def X(self,dia,hora,jj):
-        position = (dia-1)*24-(24-hora-1)
+        
+    def map(self):
+        interact_manual(self.MAP,
+                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hora=widgets.IntSlider(min=6,max=20,step=1,value=12),
+                 Lmax=widgets.IntSlider(min=0,max=35000,step=100,value=5000))
+        
+        
+    def X(self,day,hour,jj):
+        position = (day-1)*24-(24-hour-1)
         mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
 #         print(jj*self.deltay+self.deltay/2.)
         x = np.linspace(self.xmin,self.xmax,self.nx)
@@ -170,7 +186,7 @@ class daylight:
 #         print(ymax)
         y = np.linspace(self.ymin,self.ymax,self.ny)
         print("y ={:.2f} [m]".format(y[jj]))
-        fig = plt.figure(figsize=(10,2))
+        fig = plt.figure(figsize=(10,3))
         ax1 = fig.add_subplot(111)    
         plt.xlabel('$x$ $[m]$')
         plt.ylabel('Illuminance $[lx]$')
@@ -183,21 +199,27 @@ class daylight:
         for i in range(len(x)):
             print("{:.2f}\t{:.2f}".format(x[i],mapa[jj,i])) 
       
+    def x(self):
+        interact_manual(self.X,
+                 day=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hour=widgets.IntSlider(min=0,max=23,step=1,value=12),
+                 jj=widgets.IntSlider(min=0,max=self.ny-1,step=1,value=0))
+
    
         
     def y(self):
         interact_manual(self.Y,
-                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
-                 hora=widgets.IntSlider(min=0,max=23,step=1,value=12),
+                 day=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hour=widgets.IntSlider(min=0,max=23,step=1,value=12),
                  ii=widgets.IntSlider(min=0,max=self.nx-1,step=1,value=0))
-    def Y(self,dia,hora,ii):
-        position = (dia-1)*24-(24-hora-1)
+    def Y(self,day,hour,ii):
+        position = (day-1)*24-(24-hour-1)
         mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
 #         print(ii*self.deltax + self.deltax/2.)
         y = np.linspace(self.ymin,self.ymax,self.ny)
         x = np.linspace(self.xmin,self.xmax,self.nx)
         print("x ={:.2f} [m]".format(x[ii]))
-        fig = plt.figure(figsize=(10,2))
+        fig = plt.figure(figsize=(10,3))
         ax1 = fig.add_subplot(111)    
         plt.xlabel('$y$ $[m]$')
         plt.ylabel('Illuminance $[lx]$')
@@ -210,16 +232,4 @@ class daylight:
         for i in range(len(y)):
             print("{:.2f}\t{:.2f}".format(y[i],mapa[i,ii])) 
         
-        
-    def x(self):
-        interact_manual(self.X,
-                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
-                 hora=widgets.IntSlider(min=0,max=23,step=1,value=12),
-                 jj=widgets.IntSlider(min=0,max=self.ny-1,step=1,value=0))
-        
-    def map(self):
-        interact_manual(self.MAP,
-                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
-                 hora=widgets.IntSlider(min=6,max=20,step=1,value=12),
-                 Lmax=widgets.IntSlider(min=0,max=35000,step=100,value=5000))
         

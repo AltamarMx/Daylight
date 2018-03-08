@@ -4,7 +4,7 @@ Ill file is an output from Radiance with a lot of data. Methods to calculate the
 Usefull Daylight Iluminance, illuminance map, illuminance along a direction, are implemented to
 visualize results.
 
-A jupyter notebook is provided with typical output file.
+A jupyter notebook is provided with a typical output file.
 ## Getting Started  
 
 Download the notebook using-UDI.ipynb, an example of each method is used.
@@ -30,24 +30,55 @@ from bokeh.io import output_notebook
 output_notebook()
 
 
-nombres = ['t','Ein','Eout', 'Nin','Nout', 'Oin','Oout', 'Sin','Sout', 'Pin','Pout','Tein','Teout']
-caso1 = ep.readEP('datos/cubo.csv',nombres)
+a = ill.daylight('data/cubo_map.ill')
 
-caso1.datos.columns
+print(a.__doc__)
 
-p = figure(plot_width=900, plot_height=500,x_axis_type='datetime',
-           toolbar_location="above")
-formato de inicio y fin   YYYY-MM-DD
-inicio = '2017-04-06'
-fin    = '2017-04-07'
+a.udi()
 
-q = caso1.datos[inicio:fin]
+a.map()
 
-p.line(q.index,q.Ein,color='blue',legend='Ei')
-p.line(q.index,q.Eout,color='red',legend='Eout')
-p.line(q.index,q.Pin,color='black',legend='Pi')
-p.line(q.index,q.Pout,color='brown',legend='Pout')
-show(p)
+a.x()
+
+a.y()
+
+
+
+    udi()
+        Calculate the UDI [https://patternguide.advancedbuildings.net/using-this-guide/analysis-methods/useful-daylight-illuminance]
+        when defining the following parameters:
+        E_LL:  Lower limit illumination level [lx]
+        E_UL:  Upper limit illumination level [lx]
+        t_min: Start hour of day to evaluate the UDI [h]
+        t_http://localhost:8891/edit/modulos/illumination.py#max: End hout of day to evaluate the UDI [h]
+        dC:    Number of color leves for the UDI [-]
+        Once executed, prints the frequency of visual comfort (FVC).
+
+        
+        
+    map()
+        Plot the illuminance map for the space for a specific day, time and renders using a maximum value of the illuminance:
+        day:  day to plot the illuminance map [-]
+        hour: Time of day (0,24) to plot the illuminance map [h]
+        Lmax: Maximum value to render illuminance map [lx]
+    
+    x()
+        Plot the illuminance along the x direction at a specific value of y:
+        day:  day to plot the illuminance along the x direction [-]
+        hour: Time of day (0,24) to plot the illuminance along the x direction [h]
+        jj:   Number of element (0,Ly) to plot the illuminance along the x direcion [-]
+        
+    
+    y()
+        Plot the illuminance along the y direction at a specific value of x:
+        day:  day to plot the illuminance along the x direction [-]
+        hour: Time of day (0,24) to plot the illuminance along the y direction [h]
+        ii:   Number of element (0,Lx) to plot the illuminance along the y direcion [-]
+    fvc()
+        Frequency of visual comfort (average of the UDI_useful)
+
+
+
 
 
 ## Authors
@@ -61,4 +92,4 @@ This project is licensed under ...
 
 ## Acknowledgments
 
-* Requests are welcomed
+* Requests and suggestions are welcomed.
