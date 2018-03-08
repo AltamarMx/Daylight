@@ -32,7 +32,7 @@ output_notebook()
 
 a = ill.daylight('data/cubo_map.ill')
 
-print(a.__doc__)
+print(a.\__doc\__)
 
 a.udi()
 
