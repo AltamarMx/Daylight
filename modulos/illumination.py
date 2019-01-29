@@ -76,7 +76,11 @@ class daylight:
         self.dias = int(dias/24)
         self.renglones, self.cols = ill.shape
         self.columnas = np.arange(6,self.cols)
-        self.ill_data = ill[self.columnas]
+        ill_tmp  = ill[self.columnas]
+        self.ill_data = ill_tmp.iloc[np.arange(-1, len(ill_tmp)-1)]
+        self.ill_data.reset_index(drop=True,inplace=True)
+        
+        print("days: {}".format(self.dias))  
         print("nx: {}".format(self.nx))
         print("ny: {}".format(self.ny))
         print("Lx: {:.2f} [m]".format(self.xmax[0]-self.xmin[0]))
@@ -151,7 +155,9 @@ class daylight:
           
   
     def MAP(self,dia,hora,Lmax):
-        position = (dia-1)*24-(24-hora-1)
+        
+        position = (day)*24-(24-hour)
+#         position = (dia-1)*24-(24-hora-1)
         mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
         fig = plt.figure(figsize=(10,8))
         levels = np.linspace(0,Lmax,50)
@@ -175,29 +181,47 @@ class daylight:
                  dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
                  hora=widgets.IntSlider(min=6,max=20,step=1,value=12),
                  Lmax=widgets.IntSlider(min=0,max=35000,step=100,value=5000))
-        
+    def Y(self,day,hour,ii):
+        position = (day)*24-(24-hour)
+        mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
+        y = np.linspace(self.ymin[0],self.ymax[0],self.ny)
+        x = np.linspace(self.xmin[0],self.xmax[0],self.nx)
+        fig = plt.figure(figsize=(10,3))
+        ax1 = fig.add_subplot(111)    
+        plt.xlabel('$y$ $[m]$')
+        plt.ylabel('Illuminance $[lx]$')
+        plt.ticklabel_format(axis='y', style='plain')
+        y_plot = ax1.plot(y   ,mapa[:,ii])
+        y_plot = ax1.scatter(y,mapa[:,ii])
+        plt.show()
+        print("x ={:.2f} [m]".format(x[ii]))
+        print('#y\tIl')
+        print('#[m]\t[lx]')
+        for i in range(len(y)):
+            print("{:.2f}\t{:.2f}".format(y[i],mapa[i,ii])) 
+#         print(mapa[:,ii])
+#         print(y)
         
     def X(self,day,hour,jj):
-        position = (day-1)*24-(24-hour-1)
+        position = (day)*24-(24-hour)
         mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
-#         print(jj*self.deltay+self.deltay/2.)
-        x = np.linspace(self.xmin,self.xmax,self.nx)
         ymax = self.ymax - self.ymin + jj*self.deltay + self.deltay/2.
-#         print(ymax)
-        y = np.linspace(self.ymin,self.ymax,self.ny)
-        print("y ={:.2f} [m]".format(y[jj]))
+        y = np.linspace(self.ymin[0],self.ymax[0],self.ny)
+        x = np.linspace(self.xmin[0],self.xmax[0],self.nx)
         fig = plt.figure(figsize=(10,3))
         ax1 = fig.add_subplot(111)    
         plt.xlabel('$x$ $[m]$')
         plt.ylabel('Illuminance $[lx]$')
-        
         x_plot = ax1.plot(x,mapa[jj,:])
         x_plot = ax1.scatter(x,mapa[jj,:])
+        plt.ticklabel_format(axis='y', style='plain')
         plt.show()
+        print("y ={:.2f} [m]".format(y[jj]))
         print('#x\tIl')
         print('#[m]\t[lx]')
         for i in range(len(x)):
             print("{:.2f}\t{:.2f}".format(x[i],mapa[jj,i])) 
+        print(x)
       
     def x(self):
         interact_manual(self.X,
@@ -212,24 +236,5 @@ class daylight:
                  day=widgets.IntSlider(min=1,max=365,step=1,value=180),
                  hour=widgets.IntSlider(min=0,max=23,step=1,value=12),
                  ii=widgets.IntSlider(min=0,max=self.nx-1,step=1,value=0))
-    def Y(self,day,hour,ii):
-        position = (day-1)*24-(24-hour-1)
-        mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
-#         print(ii*self.deltax + self.deltax/2.)
-        y = np.linspace(self.ymin,self.ymax,self.ny)
-        x = np.linspace(self.xmin,self.xmax,self.nx)
-        print("x ={:.2f} [m]".format(x[ii]))
-        fig = plt.figure(figsize=(10,3))
-        ax1 = fig.add_subplot(111)    
-        plt.xlabel('$y$ $[m]$')
-        plt.ylabel('Illuminance $[lx]$')
-#         mapa = np.transpose(mapa)
-        x_plot = ax1.plot(y,mapa[:,ii])
-        x_plot = ax1.scatter(y,mapa[:,ii])
-        plt.show()
-        print('#y\tIl')
-        print('#[m]\t[lx]')
-        for i in range(len(y)):
-            print("{:.2f}\t{:.2f}".format(y[i],mapa[i,ii])) 
         
         
