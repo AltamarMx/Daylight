@@ -154,32 +154,35 @@ class daylight:
                  dC=widgets.IntSlider(min=5,max=50,step=5,value=5))
           
   
-    def MAP(self,dia,hora,Lmax):
+    def MAP(self,day,hour,Lmax):
         
-        position = (day)*24-(24-hour)
-#         position = (dia-1)*24-(24-hora-1)
+        position = (day)*24-(24-hour)  # Este es para que funcione con el interact
+#       position = (dia-1)*24-(24-hora-1)   # Este es para que funcione sin interact
         mapa = self.ill_data.iloc[position].values.reshape(self.ny,self.nx)
+#        print(mapa)
+#        print(self.nx)
+#        print(self.ny)
         fig = plt.figure(figsize=(10,8))
         levels = np.linspace(0,Lmax,50)
         x = np.linspace(self.xmin,self.xmax,self.nx)
         y = np.linspace(self.ymin,self.ymax,self.ny)
+#        print(x)
+#        print(x[:,0])
         ax1 = fig.add_subplot(111,aspect=self.nx/self.ny)    
         plt.xlabel('$x$ $[m]$')
         plt.ylabel('$y$ $[m]$')
         plt.title('Illuminance $[lx]$')
-        #plt.set_cmap('gist_heat')
-        plt.set_cmap('gnuplot')
-        #plt.axes().set_aspect(1.0)
-        
-        z_contourR = ax1.contourf(x,y,mapa,levels=levels)
+        plt.set_cmap('gnuplot')        
+#        z_contourR = ax1.contourf(x,y,mapa,levels=levels)
+        z_contourR = ax1.contourf(x[:,0],y[:,0],mapa,levels=levels)
         cbarR = plt.colorbar(z_contourR,ticks=np.linspace(0,Lmax,6))
         plt.show()
         
         
     def map(self):
         interact_manual(self.MAP,
-                 dia=widgets.IntSlider(min=1,max=365,step=1,value=180),
-                 hora=widgets.IntSlider(min=6,max=20,step=1,value=12),
+                 day=widgets.IntSlider(min=1,max=365,step=1,value=180),
+                 hour=widgets.IntSlider(min=6,max=20,step=1,value=12),
                  Lmax=widgets.IntSlider(min=0,max=35000,step=100,value=5000))
     def Y(self,day,hour,ii):
         position = (day)*24-(24-hour)
