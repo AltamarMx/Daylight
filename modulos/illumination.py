@@ -127,17 +127,17 @@ class daylight:
         #ax1 = set_aspect(1)
          
         plt.title('$UDI_{und}$')
-        z_contourR = ax1.contourf(x,y,UDI_sub,levels=levels)
+        z_contourR = ax1.contourf(x[:,0],y[:,0],UDI_sub,levels=levels)
         cbarR = plt.colorbar(z_contourR,ticks=np.linspace(0,100,6))
         
         ax2 = fig.add_subplot(232,aspect=self.nx/self.ny)
         plt.title('$UDI_u$')
-        z_contourI = ax2.contourf(x,y,UDI_u,levels=levels)
+        z_contourI = ax2.contourf(x[:,0],y[:,0],UDI_u,levels=levels)
         cbarI = plt.colorbar(z_contourI,ticks=np.linspace(0,100,6))
         
         ax3 = fig.add_subplot(233,aspect=self.nx/self.ny)
         plt.title('$UDI_{over}$')
-        z_contourJ = ax3.contourf(x,y,UDI_sob,levels=levels)
+        z_contourJ = ax3.contourf(x[:,0],y[:,0],UDI_sob,levels=levels)
         cbarI = plt.colorbar(z_contourJ,ticks=np.linspace(0,100,6))
         
         plt.tight_layout()
